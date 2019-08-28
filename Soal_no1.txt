@@ -1,0 +1,86 @@
+1.  Tampilkan daftar 10 kota terpadat di Indonesia. Urutkan data dari kota dengan populasi terbanyak.
+    Kolom yang diwajibkan tampil adalah id kota, nama kota, kode negara, distrik/provinsi dan populasi.
+Jawaban :
+mysql> show databases;
+    ->use world;
+    ->show tables;
+    ->select * from city where CountryCode = 'IDN' order by Population desc limit 10;
+----------------------------------------------------------------------------------------------------------------------------
+2.  Tampilkan daftar 10 kota terpadat di dunia beserta asal negaranya. Urutkan data dari kota dengan populasi terbanyak.
+    Kolom yang diwajibkan ada minimal adalah id kota, nama kota, distrik/provinsi, nama negara dan populasi.
+Jawaban :
+mysql> select ci.id, ci.Name, ci.district, co.Name,ci.population
+    -> from (select Name,Code from country) co
+    -> inner join city ci
+    -> on ci.CountryCode = co.Code
+    -> order by Population desc
+    -> limit 10;
+----------------------------------------------------------------------------------------------------------------------------
+3.  Tampilkan daftar 10 negara yang tercatat merdeka paling awal. Daftar negara yang tidak diketahui tahun kemerdekaannya, tidak perlu diikutsertakan.
+    Kolom yang diwajibkan ada minimal adalah kode negara, nama negara, benua, regional dan tahun merdeka (Independence Year).
+Jawaban :
+mysql> select code, Name, Continent, Region, IndepYear as tahun_merdeka from country
+    -> where IndepYear !=0
+    -> order by IndepYear
+    -> asc limit 10;
+----------------------------------------------------------------------------------------------------------------------------
+4.  Tampilkan daftar benua yang memiliki lebih dari 10 negara di dalamnya. Kolom yang ditampilkan minimal: 
+    nama benua, jumlah negara di dalam benua, total populasi dan rata-rata angka harapan hidup (Life Expectancy) kemudian urutkan dari benua yang memiliki populasi terbanyak.
+Jawaban :
+mysql> select Continent, count(*) as Jumlah_Negara, sum(Population) as Populasi, avg(LifeExpectancy) as Rata_AngkaHarapanHidup
+    -> from country group by Continent order by Populasi desc
+    -> limit 6;
+----------------------------------------------------------------------------------------------------------------------------
+5. Tampilkan daftar negara-negara Asia yang memiliki angka harapan hidup lebih dari rata-rata angka harapan hidup negara-negara Eropa.
+    Kolom yang diwajibkan ada yaitu nama negara, nama benua, angka harapan hidup dan Pendapatan Nasional Bruto/GNP (Gross National Product).
+Jawaban :
+mysql> select Name as Nama, Continent as Benua, LifeExpectancy as AngkaHarapanHidup, GNP
+    -> from country where Continent = 'Asia'
+    -> and LifeExpectancy > (select avg(LifeExpectancy) from country
+    -> where Continent = 'Europe')
+    -> order by LifeExpectancy
+    -> desc;
+----------------------------------------------------------------------------------------------------------------------------
+6.  Tampilkan daftar 10 negara yang bahasa resminya (official language) adalah bahasa Inggris, dan memiliki persentase pengguna bahasa Inggris tertinggi di dunia.
+    Kolom yang diwajibkan ada yaitu kode negara, nama negara, bahasa, kolom isOfficial dan percentage.
+Jawaban :
+mysql> select * from countrylanguage
+    -> where language = 'English'
+    -> and isOfficial = 'T'
+    -> order by Percentage desc limit 10
+----------------------------------------------------------------------------------------------------------------------------
+7.  Tampilkan daftar negara ASEAN beserta populasi negaranya, Pendapatan Nasional Bruto/GNP (Gross National Product), ibukota & populasi ibukota,
+    dengan kolom yang diwajibkan ada yaitu nama negara, populasi negara, pendapatan nasional bruto (GNP), nama ibukota dan populasi ibukota.
+Jawaban :
+mysql> select co.Name as Negara_ASEAN, co.Population as Populasi_Negara, co.GNP, ci.Name as Ibukota, ci.Population as Populasi_Ibukota
+    -> from (select ID, Name, Population from city) ci
+    -> inner join country co
+    -> on co.Capital = ci.ID
+    -> where Region = 'Southeast Asia'
+    -> order by Negara_ASEAN asc;
+----------------------------------------------------------------------------------------------------------------------------
+8.  Tampilkan daftar negara G20 beserta populasi negaranya, Pendapatan Nasional Bruto/GNP (Gross National Product), ibukota & populasi ibukota,
+    dengan kolom yang diwajibkan ada yaitu nama negara, populasi negara, pendapatan nasional bruto (GNP), nama ibukota dan populasi ibukota.
+Jawaban :
+mysql> select co.Name as Negara_G20, co.Population as Populasi_Negara, co.GNP, ci.Name as Ibukota, ci.Population as Populasi_Ibukota
+    -> from (select ID, Name, Population from city) ci
+    -> inner join country co
+    -> on co.Capital = ci.ID
+    -> where co.Name = 'Argentina'
+    -> or co.Name = 'Australia'
+    -> or co.Name = 'Brazil'
+    -> or co.Name = 'China'
+    -> or co.Name = 'France'
+    -> or co.Name = 'Germany'
+    -> or co.Name = 'India'
+    -> or co.Name = 'Indonesia'
+    -> or co.Name = 'Japan'
+    -> or co.Name = 'Mexico'
+    -> or co.Name = 'Russian Federation'
+    -> or co.Name = 'Saudi Arabia'
+    -> or co.Name = 'South Africa'
+    -> or co.Name = 'South Korea'
+    -> or co.Name = 'Turkey'
+    -> or co.Name = 'United Kingdom'
+    -> or co.Name = 'United States'
+    -> order by co.Name;
